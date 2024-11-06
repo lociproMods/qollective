@@ -1,0 +1,21 @@
+{
+  "required": true,
+  "package": "com/locipro/qollective/mixin",
+  "compatibilityLevel": "JAVA_21",
+
+  "mixins": [
+    "TorchBlockMixin"
+  ],
+
+
+  "client": [
+    "TorchBlockMixin"
+  ],
+  "server": [
+  ],
+
+
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

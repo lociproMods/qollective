@@ -39,7 +39,7 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 public class Qollective
 {
     public static final String MODID = "qollective";
-    private static final Logger LOGGER = LogUtils.getLogger();
+    public static final Logger LOGGER = LogUtils.getLogger();
 
 
     // The constructor for the mod class is the first code that is run when your mod is loaded.
