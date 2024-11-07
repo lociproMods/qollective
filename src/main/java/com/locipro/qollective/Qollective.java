@@ -1,5 +1,6 @@
 package com.locipro.qollective;
 
+import com.locipro.qollective.block.QolBlocks;
 import org.slf4j.Logger;
 
 import com.mojang.logging.LogUtils;
@@ -49,6 +50,9 @@ public class Qollective
         // Register the commonSetup method for modloading
         modEventBus.addListener(this::commonSetup);
 
+        //QolItems.ITEMS.register(modEventBus);
+        QolBlocks.BLOCKS.register(modEventBus);
+
 
         // Register ourselves for server and other game events we are interested in.
         // Note that this is necessary if and only if we want *this* class (ExampleMod) to respond directly to events.
@@ -66,13 +70,15 @@ public class Qollective
     {
         // Some common setup code
         LOGGER.info("HELLO FROM COMMON SETUP");
-
-        if (Config.logDirtBlock)
+        if (Config.rainTurnsOffTorches) {
+            LOGGER.info("Torches will be turned off during rain and re-lit once it's sunny again according to config value.");
+        }
+        /*if (Config.logDirtBlock)
             LOGGER.info("DIRT BLOCK >> {}", BuiltInRegistries.BLOCK.getKey(Blocks.DIRT));
 
         LOGGER.info(Config.magicNumberIntroduction + Config.magicNumber);
 
-        Config.items.forEach((item) -> LOGGER.info("ITEM >> {}", item.toString()));
+        Config.items.forEach((item) -> LOGGER.info("ITEM >> {}", item.toString()));*/
     }
 
     // Add the example block item to the building blocks tab
