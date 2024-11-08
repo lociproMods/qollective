@@ -3,7 +3,7 @@ package com.locipro.qollective.event;
 import com.google.common.collect.ImmutableMap;
 import com.locipro.qollective.Qollective;
 import com.locipro.qollective.block.QolBlocks;
-import it.unimi.dsi.fastutil.longs.LongIterator;
+import it.unimi.dsi.fastutil.longs.LongSet;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.*;
 import net.minecraft.world.level.GameRules;
@@ -15,13 +15,14 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.tick.LevelTickEvent;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.LinkedHashSet;
+import java.util.Set;
 import java.util.function.Supplier;
 
 @EventBusSubscriber(modid = Qollective.MODID, bus = EventBusSubscriber.Bus.GAME)
 public class TorchTickEvent {
-    public static final int blocksToChangePerTick = 1;
+    public static final int BLOCKS_PER_TICK = 1;
+    private static final float TICK_CHANCE = 0.01f;
 
     private static final ImmutableMap<? extends Block, Supplier<? extends Block>> torch_turnables = ImmutableMap.of(
             Blocks.TORCH, QolBlocks.UNLIT_TORCH,
@@ -31,23 +32,64 @@ public class TorchTickEvent {
     @SubscribeEvent
     public static void levelTick(LevelTickEvent.Post event) {
         if (event.getLevel() instanceof ServerLevel level) {
+            final int RANDOM_TICK_SPEED = level.getGameRules().getRule(GameRules.RULE_RANDOMTICKING).get();
+            if (level.random.nextFloat() > TICK_CHANCE * RANDOM_TICK_SPEED) return;
 
-            if (level.random.nextFloat() < 0.99) return;
+            ChunkMap chunkMap = level.getChunkSource().chunkMap;
 
-            final int randomTickSpeed = level.getGameRules().getRule(GameRules.RULE_RANDOMTICKING).get();
-
-            ChunkMap map = level.getChunkSource().chunkMap;
-            LongIterator tickingChunks = map.getDistanceManager().getSpawnCandidateChunks();
+            //LongIterator tickingChunks = chunkMap.getDistanceManager().getSpawnCandidateChunks();
+            LongSet tickingChunksSet = chunkMap.getDistanceManager().getTickingChunks();
 
 
-            // for each CHUNK
+            // For each ticking chunk
+            for (Long aLong : tickingChunksSet) {
+                // Get the chunk
+                ChunkHolder chunk = chunkMap.getVisibleChunkIfPresent(aLong);
+
+                if (chunk != null) {
+                    // Make a list of block positions to attempt to convert
+                    Set<BlockPos> candidates = new LinkedHashSet<>(BLOCKS_PER_TICK);
+
+                    for (int i = 0; i < BLOCKS_PER_TICK; i++) {
+                        // Gets a random position in that chunk, at y = 0
+                        BlockPos randomPosition = level.getBlockRandomPos(chunk.getPos().x, 0, chunk.getPos().z, 0);
+
+                        // Adds that position (on the surface) to the list of positions to try to transform
+                        candidates.add(new BlockPos(
+                                randomPosition.getX(),
+                                level.getHeight(Heightmap.Types.WORLD_SURFACE, randomPosition.getX(), randomPosition.getZ()) - 1,
+                                randomPosition.getZ()
+                        ));
+                    }
+
+
+                    for (BlockPos pos : candidates) {
+                        if (pos != null && level.isRainingAt(pos) && level.canSeeSky(pos)) {
+
+                            Block blockAtPos = level.getBlockState(pos).getBlock();
+
+                            if (torch_turnables.containsKey(blockAtPos) &&
+                                    torch_turnables.get(blockAtPos).get() != null) {
+
+                                BlockState newState = torch_turnables.get(blockAtPos).get().defaultBlockState();
+
+                                level.setBlock(pos, newState, Block.UPDATE_ALL_IMMEDIATE | Block.UPDATE_SUPPRESS_DROPS);
+                            }
+                        }
+                    }
+                }
+            }
+
+
+
+            /*// for each CHUNK
             tickingChunks.forEachRemaining(aLong -> {
                 List<BlockPos> positions = new ArrayList<>(blocksToChangePerTick);
 
-                ChunkHolder chunk = map.getVisibleChunkIfPresent(aLong);
+                ChunkHolder chunk = chunkMap.getVisibleChunkIfPresent(aLong);
                 assert chunk != null;
 
-                for (int i = 0; i < randomTickSpeed; i++) {
+                for (int i = 0; i < RANDOM_TICK_SPEED; i++) {
                     if (positions.size() >= blocksToChangePerTick) break;
 
                     BlockPos pos = level.getBlockRandomPos(chunk.getPos().x, 0, chunk.getPos().z, 0);
@@ -68,7 +110,7 @@ public class TorchTickEvent {
                         }
                     }
                 }
-            });
+            });*/
         }
     }
 
