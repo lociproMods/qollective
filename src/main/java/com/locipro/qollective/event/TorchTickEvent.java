@@ -29,6 +29,8 @@ public class TorchTickEvent {
             Blocks.WALL_TORCH, QolBlocks.UNLIT_WALL_TORCH
     );
 
+    // I don't really know why this isn't working, only works on 9 chunks (not aligned to chunk grid) near spawn
+    // Also I think it's converting more than 1 block per tick, which it really really shouldn't becuase our list of block positions to transform is of size ONE.
     @SubscribeEvent
     public static void levelTick(LevelTickEvent.Post event) {
         if (event.getLevel() instanceof ServerLevel level) {
