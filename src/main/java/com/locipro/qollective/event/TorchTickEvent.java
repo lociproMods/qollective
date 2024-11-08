@@ -1,13 +1,13 @@
 package com.locipro.qollective.event;
 
 import com.locipro.qollective.Qollective;
+import it.unimi.dsi.fastutil.longs.LongIterator;
 import it.unimi.dsi.fastutil.longs.LongSet;
 import net.minecraft.core.BlockPos;
-import net.minecraft.server.level.ServerChunkCache;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.level.*;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
@@ -20,18 +20,38 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.tick.LevelTickEvent;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Stream;
 
 @EventBusSubscriber(modid = Qollective.MODID, bus = EventBusSubscriber.Bus.GAME)
 public class TorchTickEvent {
+    public static final int blocksPerChunk = 3;
     @SubscribeEvent
     public static void levelTick(LevelTickEvent.Post event) {
         if (event.getLevel() instanceof ServerLevel level) {
             if (!level.isRaining()) return;
             if (level.getRandom().nextBoolean()) return;
 
-            List<ServerPlayer> players = level.players();
-            LongSet tickingChunks = level.getChunkSource().chunkMap.getDistanceManager().getTickingChunks();
+            ChunkMap map = level.getChunkSource().chunkMap;
+            LongIterator tickingChunks = map.getDistanceManager().getSpawnCandidateChunks();
+
+            BlockPos[] positions = new BlockPos[blocksPerChunk];
+
+            tickingChunks.forEachRemaining(aLong -> {
+                ChunkHolder chunk = map.getVisibleChunkIfPresent(aLong);
+                assert chunk != null;
+
+                for (int i = 0; i < level.getGameRules().getRule(GameRules.RULE_RANDOMTICKING).get(); i++) {
+                    BlockPos pos = level.getBlockRandomPos(chunk.getPos().x, 0, chunk.getPos().z, 0);
+                    positions[i] = pos;
+                }
+            });
+
+
+
+            for (BlockPos pos : positions) {
+                // Test if it's a torch!
+            }
         }
     }
 
