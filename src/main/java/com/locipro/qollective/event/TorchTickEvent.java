@@ -1,7 +1,9 @@
 package com.locipro.qollective.event;
 
 import com.locipro.qollective.Qollective;
+import it.unimi.dsi.fastutil.longs.LongSet;
 import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerChunkCache;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.RandomSource;
@@ -20,17 +22,18 @@ import net.neoforged.neoforge.event.tick.LevelTickEvent;
 import java.util.List;
 import java.util.stream.Stream;
 
-//@EventBusSubscriber(modid = Qollective.MODID, bus = EventBusSubscriber.Bus.GAME)
+@EventBusSubscriber(modid = Qollective.MODID, bus = EventBusSubscriber.Bus.GAME)
 public class TorchTickEvent {
-    /*@SubscribeEvent
+    @SubscribeEvent
     public static void levelTick(LevelTickEvent.Post event) {
         if (event.getLevel() instanceof ServerLevel level) {
+            if (!level.isRaining()) return;
+            if (level.getRandom().nextBoolean()) return;
+
             List<ServerPlayer> players = level.players();
-            for (ServerPlayer player : players) {
-                // i give up ! yay
-            }
+            LongSet tickingChunks = level.getChunkSource().chunkMap.getDistanceManager().getTickingChunks();
         }
-    }*/
+    }
 
 }
 /* isAreaLoaded ?
