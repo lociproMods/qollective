@@ -30,7 +30,8 @@ public class QolBlocks {
     /*public static final DeferredBlock<Block> UNLIT_TORCH = BLOCKS.register("unlit_torch",
             () -> new UnlitTorchBlock(BlockBehaviour.Properties
                     .ofFullCopy(Blocks.TORCH)));*/
-    public static final DeferredBlock<Block> UNLIT_TORCH = registerBlockWithItem("unlit_torch",
+    // Block item handled separately
+    public static final DeferredBlock<Block> UNLIT_TORCH = BLOCKS.registerBlock("unlit_torch",
             UnlitTorchBlock::new, BlockBehaviour.Properties.ofFullCopy(Blocks.TORCH));
 
     public static final DeferredBlock<Block> UNLIT_WALL_TORCH = BLOCKS.registerBlock("unlit_wall_torch",

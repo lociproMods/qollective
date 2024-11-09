@@ -1,6 +1,8 @@
 package com.locipro.qollective;
 
 import com.locipro.qollective.block.QolBlocks;
+import com.locipro.qollective.item.QolItems;
+import net.minecraft.world.item.*;
 import org.slf4j.Logger;
 
 import com.mojang.logging.LogUtils;
@@ -10,10 +12,6 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.food.FoodProperties;
-import net.minecraft.world.item.BlockItem;
-import net.minecraft.world.item.CreativeModeTab;
-import net.minecraft.world.item.CreativeModeTabs;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockBehaviour;
@@ -50,7 +48,7 @@ public class Qollective
         // Register the commonSetup method for modloading
         modEventBus.addListener(this::commonSetup);
 
-        //QolItems.ITEMS.register(modEventBus);
+        QolItems.ITEMS.register(modEventBus);
         QolBlocks.BLOCKS.register(modEventBus);
 
 
@@ -86,6 +84,11 @@ public class Qollective
     {
         /*if (event.getTabKey() == CreativeModeTabs.BUILDING_BLOCKS)
             event.accept(EXAMPLE_BLOCK_ITEM);*/
+        if (event.getTabKey() == CreativeModeTabs.FUNCTIONAL_BLOCKS) {
+            event.insertAfter(new ItemStack(Blocks.TORCH),
+                              new ItemStack(QolBlocks.UNLIT_TORCH),
+                              CreativeModeTab.TabVisibility.PARENT_AND_SEARCH_TABS);
+        }
     }
 
     // You can use SubscribeEvent and let the Event Bus discover methods to call
