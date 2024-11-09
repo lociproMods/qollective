@@ -25,5 +25,8 @@ public class UnlitWallTorchBlock extends WallTorchBlock {
     public void animateTick(BlockState state, Level level, BlockPos pos, RandomSource random) {}
 
 
-
+    @Override
+    public @Nullable BlockState getStateForPlacement(BlockPlaceContext context) {
+        return super.getStateForPlacement(context);
+    }
 }

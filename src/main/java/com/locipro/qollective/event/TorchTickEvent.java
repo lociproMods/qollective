@@ -1,17 +1,21 @@
 package com.locipro.qollective.event;
 
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
 import com.locipro.qollective.Config;
 import com.locipro.qollective.Qollective;
 import com.locipro.qollective.block.QolBlocks;
 import it.unimi.dsi.fastutil.longs.LongSet;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.server.level.*;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.HorizontalDirectionalBlock;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -32,6 +36,10 @@ public class TorchTickEvent {
     private static final ImmutableMap<? extends Block, Supplier<? extends Block>> torch_turnables = ImmutableMap.of(
             Blocks.TORCH, QolBlocks.UNLIT_TORCH,
             Blocks.WALL_TORCH, QolBlocks.UNLIT_WALL_TORCH
+    );
+
+    private static final ImmutableSet<? extends Block> wall_torches = ImmutableSet.of(
+            Blocks.WALL_TORCH
     );
 
     // I am my own greatest enemy
@@ -81,14 +89,21 @@ public class TorchTickEvent {
 
                             if (level.isRainingAt(levelPos) && level.canSeeSky(levelPos)) {
 
-                                Block blockAtPos = level.getBlockState(levelPos).getBlock();
+                                BlockState old = level.getBlockState(levelPos);
 
-                                if (torch_turnables.containsKey(blockAtPos) &&
-                                        torch_turnables.get(blockAtPos).get() != null) {
+                                if (torch_turnables.containsKey(old.getBlock())) {
+                                    // Won't be null (Inshallah)
+                                    BlockState turned = torch_turnables.get(old.getBlock()).get().defaultBlockState();
 
-                                    BlockState newState = torch_turnables.get(blockAtPos).get().defaultBlockState();
+                                    // Handle wall torch rotation!
+                                    if (wall_torches.contains(old.getBlock())) {
+                                        @Nullable Direction oldFacing = old.getValue(HorizontalDirectionalBlock.FACING);
+                                        if (oldFacing != null) {
+                                            turned = turned.setValue(HorizontalDirectionalBlock.FACING, oldFacing);
+                                        }
+                                    }
 
-                                    level.setBlock(levelPos, newState, Block.UPDATE_ALL_IMMEDIATE | Block.UPDATE_SUPPRESS_DROPS);
+                                    level.setBlock(levelPos, turned, Block.UPDATE_ALL_IMMEDIATE | Block.UPDATE_SUPPRESS_DROPS);
                                 }
                             }
                         }
