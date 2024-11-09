@@ -20,6 +20,7 @@ import java.util.Random;
 // Schedules a tick for all torch blocks
 // can't i guess
 // Let's use an event to schedule a tick.
+// how about we not
 @Deprecated
 @Mixin(BaseTorchBlock.class)
 public abstract class BaseTorchBlockMixin extends Block {

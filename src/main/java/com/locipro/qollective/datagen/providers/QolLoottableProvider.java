@@ -21,7 +21,6 @@ public class QolLoottableProvider extends BlockLootSubProvider {
         dropOther(QolBlocks.UNLIT_TORCH.get(), Blocks.TORCH);
     }
     // These are all the blocks that will need a loot table generated.
-    // If you want a block to drop nothing, simply add ".noLootTable()" to its builder pattern when making the block
     @Override
     protected @NotNull Iterable<Block> getKnownBlocks() {
         return QolBlocks.BLOCKS.getEntries().stream().map(Holder::value)::iterator;
