@@ -14,7 +14,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.NotNull;
 
 public class UnlitTorchBlock extends BaseTorchBlock {
-    //private boolean scheduledToTurnOff = false;
 
     public static final MapCodec<UnlitTorchBlock> CODEC = simpleCodec(UnlitTorchBlock::new);
 
@@ -26,13 +25,5 @@ public class UnlitTorchBlock extends BaseTorchBlock {
     public UnlitTorchBlock(Properties properties) {
         super(properties);
     }
-
-
-    // Make it revert
-    /*@Override
-    protected BlockState updateShape(BlockState p_304418_, Direction p_304475_, BlockState p_304669_, LevelAccessor p_304637_, BlockPos p_304633_, BlockPos p_304603_) {
-        BlockState state =super.updateShape(p_304418_, p_304475_, p_304669_, p_304637_, p_304633_, p_304603_);
-        return state;
-    }*/
 
 }

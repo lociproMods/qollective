@@ -1,21 +1,29 @@
 package com.locipro.qollective.block.custom;
 
 
-import com.mojang.serialization.MapCodec;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.particles.SimpleParticleType;
-import net.minecraft.world.level.block.BaseTorchBlock;
-import net.minecraft.world.level.block.TorchBlock;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.block.WallTorchBlock;
 import net.minecraft.world.level.block.entity.trialspawner.TrialSpawner;
+import net.minecraft.world.level.block.state.BlockState;
+import org.jetbrains.annotations.Nullable;
 
-public class UnlitWallTorchBlock extends BaseTorchBlock {
+public class UnlitWallTorchBlock extends WallTorchBlock {
 
 
     public UnlitWallTorchBlock(Properties properties) {
-        super(properties);
+        super(ParticleTypes.SMOKE, properties);
     }
+
     @Override
-    protected MapCodec<? extends BaseTorchBlock> codec() {
-        return simpleCodec(UnlitTorchBlock::new);
-    }
+    public void animateTick(BlockState state, Level level, BlockPos pos, RandomSource random) {}
+
+
 
 }

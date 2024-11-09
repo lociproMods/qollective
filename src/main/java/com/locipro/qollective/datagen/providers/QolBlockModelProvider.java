@@ -20,7 +20,7 @@ public class QolBlockModelProvider extends BlockStateProvider    {
 
     @Override
     protected void registerStatesAndModels() {
-
+            // This shit doesn't really need that man, I'm just going to manually do them.
     }
     /*private void createNormalTorch(Block torchBlock, Block wallTorchBlock) {
         TextureMapping texturemapping = TextureMapping.torch(torchBlock);

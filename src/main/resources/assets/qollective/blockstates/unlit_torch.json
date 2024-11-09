@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "qollective:block/unlit_torch"
+    }
+  }
+}

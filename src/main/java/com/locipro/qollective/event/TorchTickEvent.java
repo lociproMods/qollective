@@ -60,13 +60,17 @@ public class TorchTickEvent {
 
                     for (int i = 0; i < BLOCKS_PER_TICK; i++) {
                         // Gets a random position in that chunk, at y = 0
-                        // CHUNK COORDS!!!!
+                        // CHUNK COORDS!!!! (Y isn't a chunk coord)
                         BlockPos randomPosition = level.getBlockRandomPos(chunk.getPos().x, 0, chunk.getPos().z, 0);
 
+                        BlockPos levelPos = chunk.getPos().getBlockAt(randomPosition.getX(), randomPosition.getY(), randomPosition.getZ());
+
                         // Adds that position (on the surface) to the list of positions to try to transform
+
+                        // isn't actually on surface.
                         candidates.add(new BlockPos(
                                 randomPosition.getX(),
-                                level.getHeight(Heightmap.Types.WORLD_SURFACE, randomPosition.getX(), randomPosition.getZ()) - 1,
+                                level.getHeight(Heightmap.Types.WORLD_SURFACE, levelPos.getX(), levelPos.getZ()) - 1,
                                 randomPosition.getZ()
                         ));
                     }

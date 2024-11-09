@@ -18,7 +18,8 @@ public class QolLoottableProvider extends BlockLootSubProvider {
     }
     @Override
     protected void generate() {
-        dropOther(QolBlocks.UNLIT_TORCH.get(), Blocks.TORCH);
+        dropSelf(QolBlocks.UNLIT_TORCH.get());
+        dropOther(QolBlocks.UNLIT_WALL_TORCH.get(), QolBlocks.UNLIT_TORCH);
     }
     // These are all the blocks that will need a loot table generated.
     @Override
