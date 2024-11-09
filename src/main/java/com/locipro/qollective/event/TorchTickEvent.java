@@ -1,6 +1,7 @@
 package com.locipro.qollective.event;
 
 import com.google.common.collect.ImmutableMap;
+import com.locipro.qollective.Config;
 import com.locipro.qollective.Qollective;
 import com.locipro.qollective.block.QolBlocks;
 import it.unimi.dsi.fastutil.longs.LongSet;
@@ -18,39 +19,39 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.tick.LevelTickEvent;
 
 import javax.annotation.Nullable;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.function.Supplier;
 
 @EventBusSubscriber(modid = Qollective.MODID, bus = EventBusSubscriber.Bus.GAME)
 public class TorchTickEvent {
-    public static final int BLOCKS_PER_TICK = 1;
-    private static final float TICK_CHANCE = 0.66f;
+
+    private static final int BLOCKS_PER_TICK = 1;
 
     private static final ImmutableMap<? extends Block, Supplier<? extends Block>> torch_turnables = ImmutableMap.of(
             Blocks.TORCH, QolBlocks.UNLIT_TORCH,
             Blocks.WALL_TORCH, QolBlocks.UNLIT_WALL_TORCH
     );
 
-    // I don't really know why this isn't working, only works on 9 chunks (not aligned to chunk grid) near spawn
-    // Also I think it's converting more than 1 block per tick, which it really really shouldn't becuase our list of block positions to transform is of size ONE.
+    // I am my own greatest enemy
+    // I spent hours on this, trying to fix it, not understanding why it was only working for the first few chunks around 0,0
+    // I, in my genius, used the CHUNK COORDINATES. (CHUNKPOS). FOR THE BLOCK GET/SET LOGIC.
     @SubscribeEvent
     public static void levelTick(LevelTickEvent.Post event) {
         if (event.getLevel() instanceof ServerLevel level) {
+            if (!Config.rainTurnsOffTorches) return;
+
             final int RANDOM_TICK_SPEED = level.getGameRules().getRule(GameRules.RULE_RANDOMTICKING).get();
-            if (level.random.nextFloat() > TICK_CHANCE * RANDOM_TICK_SPEED) return;
+            if (level.random.nextFloat() > Config.torchTickChance * RANDOM_TICK_SPEED) return;
 
             ChunkMap chunkMap = level.getChunkSource().chunkMap;
 
-            //LongSet tickingChunksSet = chunkMap.getDistanceManager().getTickingChunks(); //size is like 1500
+            Iterator<Long> tickingChunksSet = chunkMap.getDistanceManager().getSpawnCandidateChunks();
 
-            Iterable<ChunkHolder> chunks = chunkMap.getChunks();
-
-
-
-            chunks.forEach(cH -> {
+            tickingChunksSet.forEachRemaining(cH -> {
                 @Nullable
-                LevelChunk chunk = cH.getTickingChunk();
+                ChunkHolder chunk = chunkMap.getVisibleChunkIfPresent(cH);
 
                 if (chunk != null) {
                     // Make a list of block positions to attempt to convert
@@ -94,67 +95,3 @@ public class TorchTickEvent {
     }
 
 }
-/* isAreaLoaded ?
-@Override
-protected void randomTick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
-    if (!canBeGrass(state, level, pos)) {
-        if (!level.isAreaLoaded(pos, 1)) return; // Forge: prevent loading unloaded chunks when checking neighbor's light and spreading
-        level.setBlockAndUpdate(pos, Blocks.DIRT.defaultBlockState());
-    } else {
-        if (!level.isAreaLoaded(pos, 3)) return; // Forge: prevent loading unloaded chunks when checking neighbor's light and spreading
-        if (level.getMaxLocalRawBrightness(pos.above()) >= 9) {
-            BlockState blockstate = this.defaultBlockState();
-
-            for (int i = 0; i < 4; i++) {
-                BlockPos blockpos = pos.offset(random.nextInt(3) - 1, random.nextInt(5) - 3, random.nextInt(3) - 1);
-                if (level.getBlockState(blockpos).is(Blocks.DIRT) && canPropagate(blockstate, level, blockpos)) {
-                    level.setBlockAndUpdate(
-                            blockpos, blockstate.setValue(SNOWY, Boolean.valueOf(level.getBlockState(blockpos.above()).is(Blocks.SNOW)))
-                    );
-                }
-            }
-        }
-    }
-}*/
-
-
-
-
-// For each ticking chunk
-            /*for (Long aLong : tickingChunksSet) {
-                // Get the chunk
-                ChunkHolder chunk = chunkMap.getVisibleChunkIfPresent(aLong);
-
-                if (chunk != null) {
-                    // Make a list of block positions to attempt to convert
-                    Set<BlockPos> candidates = new LinkedHashSet<>(BLOCKS_PER_TICK);
-
-                    for (int i = 0; i < BLOCKS_PER_TICK; i++) {
-                        // Gets a random position in that chunk, at y = 0
-                        BlockPos randomPosition = level.getBlockRandomPos(chunk.getPos().x, 0, chunk.getPos().z, 0);
-
-                        // Adds that position (on the surface) to the list of positions to try to transform
-                        candidates.add(new BlockPos(
-                                randomPosition.getX(),
-                                level.getHeight(Heightmap.Types.WORLD_SURFACE, randomPosition.getX(), randomPosition.getZ()) - 1,
-                                randomPosition.getZ()
-                        ));
-                    }
-
-
-                    for (BlockPos pos : candidates) {
-                        if (pos != null && level.isRainingAt(pos) && level.canSeeSky(pos)) {
-
-                            Block blockAtPos = level.getBlockState(pos).getBlock();
-
-                            if (torch_turnables.containsKey(blockAtPos) &&
-                                    torch_turnables.get(blockAtPos).get() != null) {
-
-                                BlockState newState = torch_turnables.get(blockAtPos).get().defaultBlockState();
-
-                                level.setBlock(pos, newState, Block.UPDATE_ALL_IMMEDIATE | Block.UPDATE_SUPPRESS_DROPS);
-                            }
-                        }
-                    }
-                }
-            }*/

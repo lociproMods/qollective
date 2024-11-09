@@ -23,6 +23,11 @@ public class Config
             .comment("Whether to turn off torches when it rains or not")
             .define("rainTurnsOffTorches", true);
 
+    private static final ModConfigSpec.DoubleValue TORCHES_TICK_CHANCE = BUILDER
+            .comment("The base chance of a level tick to trigger a torch-turn-off tick. \n" +
+                    "later gets multiplied by the random tick speed gamerule to determine whether a torch should turn off during rain.")
+            .defineInRange("torchTickChance", 0.66, 0, 1.0);
+
     /*private static final ModConfigSpec.IntValue MAGIC_NUMBER = BUILDER
             .comment("A magic number")
             .defineInRange("magicNumber", 42, 0, Integer.MAX_VALUE);
@@ -39,6 +44,7 @@ public class Config
     static final ModConfigSpec SPEC = BUILDER.build();
 
     public static boolean rainTurnsOffTorches;
+    public static double torchTickChance;
 /*    public static int magicNumber;
     public static String magicNumberIntroduction;
     public static Set<Item> items;*/
@@ -55,6 +61,7 @@ public class Config
         magicNumber = MAGIC_NUMBER.get();
         magicNumberIntroduction = MAGIC_NUMBER_INTRODUCTION.get();*/
         rainTurnsOffTorches = TORCHES_LIGHT_OFF_RAIN.get();
+        torchTickChance = TORCHES_TICK_CHANCE.get();
 
         // convert the list of strings into a set of items
         /*items = ITEM_STRINGS.get().stream()

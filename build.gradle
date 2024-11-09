@@ -40,12 +40,10 @@ neoForge {
         minecraftVersion = project.parchment_minecraft_version
 
     }
-//    accessTransformers {
-//        file('src/main/resources/chunk_map_get_chunks_at.cfg')
-//    }
+
 
     // This line is optional. Access Transformers are automatically detected
-    accessTransformers = project.files('src/main/resources/chunk_map_get_chunks_at.cfg')
+//    accessTransformers = project.files('src/main/resources/chunk_map_get_chunks_at.cfg')
 
     // Default run configurations.
     // These can be tweaked, removed, or duplicated as needed.
