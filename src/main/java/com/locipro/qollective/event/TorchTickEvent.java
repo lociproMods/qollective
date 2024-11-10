@@ -5,6 +5,7 @@ import com.google.common.collect.ImmutableSet;
 import com.locipro.qollective.Config;
 import com.locipro.qollective.Qollective;
 import com.locipro.qollective.block.QolBlocks;
+import com.locipro.qollective.block.QolTorches;
 import it.unimi.dsi.fastutil.longs.LongSet;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -28,15 +29,13 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.function.Supplier;
 
+import static com.locipro.qollective.block.QolTorches.CONVERSION_MAP;
+
 @EventBusSubscriber(modid = Qollective.MODID, bus = EventBusSubscriber.Bus.GAME)
 public class TorchTickEvent {
 
     private static final int BLOCKS_PER_TICK = 1;
 
-    private static final ImmutableMap<? extends Block, Supplier<? extends Block>> torch_turnables = ImmutableMap.of(
-            Blocks.TORCH, QolBlocks.UNLIT_TORCH,
-            Blocks.WALL_TORCH, QolBlocks.UNLIT_WALL_TORCH
-    );
 
     private static final ImmutableSet<? extends Block> wall_torches = ImmutableSet.of(
             Blocks.WALL_TORCH
@@ -91,16 +90,14 @@ public class TorchTickEvent {
 
                                 BlockState old = level.getBlockState(levelPos);
 
-                                if (torch_turnables.containsKey(old.getBlock())) {
+                                if (CONVERSION_MAP.containsKey(old.getBlock())) {
                                     // Won't be null (Inshallah)
-                                    BlockState turned = torch_turnables.get(old.getBlock()).get().defaultBlockState();
+                                    BlockState turned = CONVERSION_MAP.get(old.getBlock()).defaultBlockState();
 
                                     // Handle wall torch rotation!
                                     if (wall_torches.contains(old.getBlock())) {
                                         @Nullable Direction oldFacing = old.getValue(HorizontalDirectionalBlock.FACING);
-                                        if (oldFacing != null) {
-                                            turned = turned.setValue(HorizontalDirectionalBlock.FACING, oldFacing);
-                                        }
+                                        turned = turned.setValue(HorizontalDirectionalBlock.FACING, oldFacing);
                                     }
 
                                     level.setBlock(levelPos, turned, Block.UPDATE_ALL_IMMEDIATE | Block.UPDATE_SUPPRESS_DROPS);

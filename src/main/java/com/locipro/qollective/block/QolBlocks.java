@@ -32,8 +32,10 @@ public class QolBlocks {
                     .ofFullCopy(Blocks.TORCH)));*/
     // Block item handled separately
     public static final DeferredBlock<Block> UNLIT_TORCH = BLOCKS.registerBlock("unlit_torch",
-            UnlitTorchBlock::new, BlockBehaviour.Properties.ofFullCopy(Blocks.TORCH));
+            UnlitTorchBlock::new, BlockBehaviour.Properties.ofFullCopy(Blocks.TORCH)
+                    .lightLevel(state -> 0));
 
     public static final DeferredBlock<Block> UNLIT_WALL_TORCH = BLOCKS.registerBlock("unlit_wall_torch",
-            UnlitWallTorchBlock::new, BlockBehaviour.Properties.ofFullCopy(Blocks.WALL_TORCH));
+            UnlitWallTorchBlock::new, BlockBehaviour.Properties.ofFullCopy(Blocks.WALL_TORCH)
+                    .lightLevel(state -> 0));
 }

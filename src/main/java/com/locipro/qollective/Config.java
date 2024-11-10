@@ -28,6 +28,10 @@ public class Config
                     "later gets multiplied by the random tick speed gamerule to determine whether a torch should turn off during rain.")
             .defineInRange("torchTickChance", 0.66, 0, 1.0);
 
+    /*private static final ModConfigSpec.ConfigValue<List<? extends String>> TORCH_IDS = BUILDER.comment(
+            "A map of torch block to unlit torch block."
+    )*/
+
     /*private static final ModConfigSpec.IntValue MAGIC_NUMBER = BUILDER
             .comment("A magic number")
             .defineInRange("magicNumber", 42, 0, Integer.MAX_VALUE);

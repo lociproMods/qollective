@@ -1,6 +1,7 @@
 package com.locipro.qollective;
 
 import com.locipro.qollective.block.QolBlocks;
+import com.locipro.qollective.block.QolTorches;
 import com.locipro.qollective.item.QolItems;
 import net.minecraft.world.item.*;
 import org.slf4j.Logger;
@@ -32,6 +33,8 @@ import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
+
+import java.util.Map;
 
 // The value here should match an entry in the META-INF/neoforge.mods.toml file
 @Mod(Qollective.MODID)
@@ -66,24 +69,18 @@ public class Qollective
 
     private void commonSetup(final FMLCommonSetupEvent event)
     {
-        // Some common setup code
-        LOGGER.info("HELLO FROM COMMON SETUP");
         if (Config.rainTurnsOffTorches) {
             LOGGER.info("Torches will be turned off during rain and re-lit once it's sunny again according to config value.");
         }
-        /*if (Config.logDirtBlock)
-            LOGGER.info("DIRT BLOCK >> {}", BuiltInRegistries.BLOCK.getKey(Blocks.DIRT));
-
-        LOGGER.info(Config.magicNumberIntroduction + Config.magicNumber);
-
-        Config.items.forEach((item) -> LOGGER.info("ITEM >> {}", item.toString()));*/
+        LOGGER.info("INITIALIZING TORCH MAPPINGS");
+        QolTorches.initTorches(Map.of(
+                Blocks.TORCH, QolBlocks.UNLIT_TORCH.get(),
+                Blocks.WALL_TORCH, QolBlocks.UNLIT_WALL_TORCH.get()
+        ));
     }
 
-    // Add the example block item to the building blocks tab
     private void addCreative(BuildCreativeModeTabContentsEvent event)
     {
-        /*if (event.getTabKey() == CreativeModeTabs.BUILDING_BLOCKS)
-            event.accept(EXAMPLE_BLOCK_ITEM);*/
         if (event.getTabKey() == CreativeModeTabs.FUNCTIONAL_BLOCKS) {
             event.insertAfter(new ItemStack(Blocks.TORCH),
                               new ItemStack(QolBlocks.UNLIT_TORCH),
