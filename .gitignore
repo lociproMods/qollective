@@ -25,3 +25,4 @@ run-data
 
 repo
 /todo.todo
+/src/generated/resources/.cache/
