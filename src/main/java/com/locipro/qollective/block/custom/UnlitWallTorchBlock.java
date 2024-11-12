@@ -34,7 +34,15 @@ public class UnlitWallTorchBlock extends TickingTorch {
 
     public UnlitWallTorchBlock(Properties properties) {
         super(properties);
-        this.registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.NORTH));
+        this.registerDefaultState(this.stateDefinition.any()
+                .setValue(FACING, Direction.NORTH)
+                .setValue(PERSISTENT, false)
+                .setValue(scheduledToYeet, false));
+    }
+    @Override
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
+        super.createBlockStateDefinition(builder);
+        builder.add(FACING);
     }
     @Override
     protected MapCodec<? extends BaseTorchBlock> codec() {
@@ -84,7 +92,7 @@ public class UnlitWallTorchBlock extends TickingTorch {
     @Nullable
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext context) {
-        BlockState blockstate = this.defaultBlockState();
+        BlockState blockstate = this.defaultBlockState().setValue(PERSISTENT, true);
         LevelReader levelreader = context.getLevel();
         BlockPos blockpos = context.getClickedPos();
         Direction[] adirection = context.getNearestLookingDirections();
@@ -139,10 +147,6 @@ public class UnlitWallTorchBlock extends TickingTorch {
         return state.rotate(mirror.getRotation(state.getValue(FACING)));
     }
 
-    @Override
-    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-        super.createBlockStateDefinition(builder);
-        builder.add(FACING);
-    }
+
 
 }

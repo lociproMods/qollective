@@ -1,9 +1,7 @@
 package com.locipro.qollective.datagen;
 
 import com.locipro.qollective.Qollective;
-import com.locipro.qollective.datagen.providers.QolBlockModelProvider;
-import com.locipro.qollective.datagen.providers.QolItemModleProvider;
-import com.locipro.qollective.datagen.providers.QolLoottableProvider;
+import com.locipro.qollective.datagen.providers.*;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
@@ -11,6 +9,7 @@ import net.minecraft.data.loot.LootTableProvider;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.common.data.BlockTagsProvider;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
 
@@ -31,6 +30,7 @@ public class QolDatagenHandler {
 
 
 
+
         generator.addProvider(
                 event.includeServer(),
                 new LootTableProvider(output, Collections.emptySet(),
@@ -38,6 +38,16 @@ public class QolDatagenHandler {
                         lookupProvider)
         );
 
+        BlockTagsProvider blockTagsProvider = new QolBlockTagProvider(output, lookupProvider, existingFileHelper);
+        generator.addProvider(
+                event.includeServer(),
+                blockTagsProvider
+        );
+
+        generator.addProvider(
+                event.includeServer(),
+                new QolRecipeProvider.Runner(output, lookupProvider)
+        );
 
         generator.addProvider(
                 event.includeClient(),

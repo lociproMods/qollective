@@ -86,8 +86,9 @@ public class TorchTickEvent {
                         if (pos != null) {
                             BlockPos levelPos = chunk.getPos().getBlockAt(pos.getX(), pos.getY(), pos.getZ());
 
-                            if (level.isRainingAt(levelPos) && level.canSeeSky(levelPos)) {
+                            if (level.isRainingAt(levelPos)) {
 
+                                // Torch
                                 BlockState old = level.getBlockState(levelPos);
 
                                 if (CONVERSION_MAP.containsKey(old.getBlock())) {
@@ -95,10 +96,12 @@ public class TorchTickEvent {
                                     BlockState turned = CONVERSION_MAP.get(old.getBlock()).defaultBlockState();
 
                                     // Handle wall torch rotation!
-                                    if (wall_torches.contains(old.getBlock())) {
-                                        @Nullable Direction oldFacing = old.getValue(HorizontalDirectionalBlock.FACING);
+                                    if (old.hasProperty(HorizontalDirectionalBlock.FACING)) {
+                                        Direction oldFacing = old.getValue(HorizontalDirectionalBlock.FACING);
                                         turned = turned.setValue(HorizontalDirectionalBlock.FACING, oldFacing);
                                     }
+
+
 
                                     level.setBlock(levelPos, turned, Block.UPDATE_ALL_IMMEDIATE | Block.UPDATE_SUPPRESS_DROPS);
                                 }
